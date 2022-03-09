@@ -10,7 +10,20 @@
 2. Simply scalable to grow with changing system requirement.
 3. Global enterprise wide access to information.
 4. Improved data security, restricting unauthorized access.
-5. Minimize Storage Space
+5. Minimize Storage Space.
+
+# High Level Requirements
+
+1. Customer must have a valid User Id and password to login to the system
+2. If a wrong password is given thrice in succession, that account will be locked and the customer will not be able to use it. When an invalid password is entered a warning is given to the user that his account is going to get locked.
+3. After the valid user logs in he is shown the list of accounts he has with the bank.
+4. On selecting the desired account he is taken to a page which shows the present balance in that particular account number.
+5. User can make a funds transfer to another account in the same bank. User is provided with a transaction password which is different from the login password.
+
+# Low Level Requirements
+
+1. The user can update his profile.
+2. User friendly interfaces.
 
 # SWOT Analysis
 
