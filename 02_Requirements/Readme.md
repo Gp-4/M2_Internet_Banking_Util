@@ -31,4 +31,4 @@
 
 ## Threats
 
-1.Due to leakage of PIN, fraud can take place easily.
+1. Due to leakage of PIN, fraud can take place easily.
