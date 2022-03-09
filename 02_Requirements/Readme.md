@@ -10,7 +10,7 @@
 2. Simply scalable to grow with changing system requirement.
 3. Global enterprise wide access to information.
 4. Improved data security, restricting unauthorized access.
-5. Minimize Storage Space
+5. Minimize Storage Space.
 
 # SWOT Analysis
 
