@@ -1,275 +1,81 @@
-package bank;
+package com.green.bank;
 
-import java.awt.event.KeyEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
 
-public class account extends javax.swing.JInternalFrame {
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-    public account() {
-        initComponents();
-        autoId();
-    }
-Connection con1;
-  PreparedStatement insert;
-  ResultSet rs1;
-    @SuppressWarnings("unchecked")
-    private void initComponents() {
+import com.green.bank.model.AccountModel;
 
-        txtbal = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
-        txtcust = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        txtfname = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jLabel4 = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
+public class CreateAccountServlet extends HttpServlet {
+	String account_no, first_name, last_name, address, city, branch, zip, username, password, re_password,
+			phone_number, email, account_type;
+	int amount;
 
-        txtbal.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtbalActionPerformed(evt);
-            }
-        });
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		PrintWriter out = response.getWriter();
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Account"));
+		first_name = request.getParameter("first_name");
+		last_name = request.getParameter("last_name");
+		address = request.getParameter("address");
+		city = request.getParameter("city");
+		branch = request.getParameter("branch");
+		zip = request.getParameter("zip");
+		username = request.getParameter("username");
+		password = request.getParameter("password");
+		re_password = request.getParameter("re_password");
+		phone_number = request.getParameter("phone");
+		email = request.getParameter("email");
+		account_type = request.getParameter("account_type");
+		amount = Integer.parseInt(request.getParameter("amount"));
 
-        jLabel3.setText("Account type");
+		// Generating account number
+		Random rand = new Random();
+		int random_num = 100000 + rand.nextInt(999999);
+		account_no = first_name.substring(0, 2) + last_name.substring(0, 2) + random_num;
+		System.out.println(account_no);
+		
+		//Getting Current date
+		DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+		String reg_date = df.format(new Date());
 
-        jLabel1.setText("Customer ID");
+		// Setting all variables to model class
+		AccountModel am = new AccountModel();
+		am.setAccount_no(account_no);
+		am.setFirst_name(first_name);
+		am.setLast_name(last_name);
+		am.setAddress(address);
+		am.setCity(city);
+		am.setBranch(branch);
+		am.setZip(zip);
+		am.setUsername(username);
+		am.setPassword(password);
+		am.setPhone_number(phone_number);
+		am.setEmail(email);
+		am.setAccount_type(account_type);
+		am.setAmount(amount);
+		am.setReg_date(reg_date);
 
-        txtcust.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtcustKeyPressed(evt);
-            }
-        });
+		if (password.equals(re_password)) {
+			request.setAttribute("Account_details", am);
+			RequestDispatcher rd = request.getRequestDispatcher("create_account_progress.jsp");
+			rd.forward(request, response);
 
-        jLabel2.setText("Custmer Name");
+		} else {
+			request.setAttribute("not_match", "yes");
+			RequestDispatcher rd = request.getRequestDispatcher("create_account.jsp");
+			rd.forward(request, response);
+		}
+	}
 
-        jLabel7.setText("Account No");
-
-        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(0, 102, 255));
-        jLabel8.setText("jLabel8");
-
-        jButton2.setText("Cancel");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Saving", "Fix", "Current" }));
-
-        jLabel4.setText("Balance");
-
-        jButton3.setText("Add");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(41, 41, 41)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel3))
-                        .addGap(42, 42, 42)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(txtfname, javax.swing.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
-                                .addComponent(txtcust))
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(126, Short.MAX_VALUE))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel7))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtcust, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtfname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(29, 29, 29)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(30, 30, 30)
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(239, Short.MAX_VALUE)
-                .addComponent(txtbal, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(198, 198, 198))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(86, 86, 86)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(66, Short.MAX_VALUE)))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(237, Short.MAX_VALUE)
-                .addComponent(txtbal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(165, 165, 165))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(24, 24, 24)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(63, Short.MAX_VALUE)))
-        );
-
-        pack();
-    }
-       public void autoId()
-    {
-        try {
-             Class.forName("com.mysql.jdbc.Driver");
-             con1 = DriverManager.getConnection("jdbc:mysql://localhost/customer","root","");
-
-            Statement s = con1.createStatement();
-            ResultSet rs = s.executeQuery("SELECT MAX(acc_id) FROM account");
-            rs.next();
-            rs.getString("MAX(acc_id)");
-            if (rs.getString("MAX(acc_id)") == null) {
-                jLabel8.setText("A0001");
-                
-            } else {
-                long id = Long.parseLong(rs.getString("MAX(acc_id)").substring(2, rs.getString("MAX(acc_id)").length()));
-                id++;
-                jLabel8.setText("A0" + String.format("%03d", id));
-            }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }      
-    }
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
-        setVisible(false); 
-        dispose();
-
-    }
-    private void txtcustKeyPressed(java.awt.event.KeyEvent evt) {
-         if (evt.getKeyCode() == KeyEvent.VK_ENTER)
-        {
-            try {
-                String procod =txtcust.getText(); 
-                Class.forName("com.mysql.jdbc.Driver");
-                con1 = DriverManager.getConnection("jdbc:mysql://localhost/customer","root","");
-                insert = con1.prepareStatement("select * from customer where cust_id = ? ");
-                insert.setString(1,procod);
-                rs1 = insert.executeQuery();
- 
-                if(rs1.next()==false)
-                {
-                    JOptionPane.showMessageDialog(null, "Customer Id not Found");
-                }
-                else
-                {
-                    String firstname = rs1.getString("firstname");
-                    txtfname.setText(firstname.trim());               
-                }
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(account.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SQLException ex) {
-                Logger.getLogger(account.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }   
-    }
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
-        try {
-            String id =jLabel8.getText();            
-            String custid =txtcust.getText();
-            String acctype =jComboBox1.getSelectedItem().toString();         
-            String balance =txtbal.getText();
-           
-            Class.forName("com.mysql.jdbc.Driver");
-            con1 = DriverManager.getConnection("jdbc:mysql://localhost/customer","root","");
-            insert = con1.prepareStatement("insert into account(acc_id,cust_id,acc_type,balance)values(?,?,?,?)");
-            insert.setString(1,id);
-            insert.setString(2,custid);
-            insert.setString(3,acctype);
-            insert.setString(4,balance);
-      
-            insert.executeUpdate();
-            JOptionPane.showMessageDialog(this, "Account Createdd");
-            autoId();      
-            txtcust.setText("");
-            txtfname.setText("");
-            jComboBox1.setSelectedIndex(-1);
-            txtbal.setText("");
-     
-
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(customer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        catch (SQLException ex) {
-            Logger.getLogger(customer.class.getName()).log(Level.SEVERE, null, ex);
-        }   
-    }
-
-    private void txtbalActionPerformed(java.awt.event.ActionEvent evt) {
-    }
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JTextField txtbal;
-    private javax.swing.JTextField txtcust;
-    private javax.swing.JTextField txtfname;
 }
